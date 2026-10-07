@@ -44,8 +44,8 @@ def measure(db,query,params,repeats):
             if reference is None:
                 reference=logical
             assert logical==reference, 'Results changed between repetitions'
-        digest=hashlib.sha256(json.dumps(sorted(reference.items()),separators=(',',':')).encode()).hexdigest()
-        return dict(plan=plan,median_ms=median(samples),samples_ms=samples,row_count=len(rows),sha256=digest), reference
+        digest=hashlib.sha256(json.dumps(sorted(reference.items()),separators=(',',':')).encode()).hexdigest() #type: ignore
+        return dict(plan=plan,median_ms=median(samples),samples_ms=samples,row_count=len(rows),sha256=digest), reference #type: ignore
 
 def validate_constraints(conn):
     cases=[("UPDATE TimeEntry SET hours=25 WHERE time_entry_id=1",()),
@@ -104,9 +104,9 @@ def run(db,out,repeats):
                 conn.commit()
                 indexed,indexed_rows=measure(db,query,params,repeats)
                 assert baseline_rows==indexed_rows, f'{name}: result mismatch'
-                assert baseline['row_count']>0
-                selected=any(index in p['detail'] for p in indexed['plan'])
-                difference=(indexed['median_ms']/baseline['median_ms']-1)*100
+                assert baseline['row_count']>0 #type: ignore
+                selected=any(index in p['detail'] for p in indexed['plan']) #type: ignore
+                difference=(indexed['median_ms']/baseline['median_ms']-1)*100 #type: ignore
                 if selected:
                     interpretation='SQLite selected the candidate index. '+('Median elapsed time decreased.' if difference<0 else 'Median elapsed time increased; using an index does not guarantee faster execution.')
                     if name=='project_labor':
@@ -124,7 +124,7 @@ def run(db,out,repeats):
                 results.append(result)
                 for label,measurement in [('baseline',baseline),('indexed',indexed)]:
                     text=f'{name} / {label}\nParameters: {json.dumps(params)}\n'
-                    text+='\n'.join(f"{p['id']} | parent {p['parent']} | {p['detail']}" for p in measurement['plan'])
+                    text+='\n'.join(f"{p['id']} | parent {p['parent']} | {p['detail']}" for p in measurement['plan']) #type: ignore
                     text+=f"\nRows: {measurement['row_count']}\nMedian: {measurement['median_ms']:.6f} ms\n"
                     (out/label/(name+'.txt')).write_text(text)
                 print(f"{name}: {baseline['median_ms']:.3f} -> {indexed['median_ms']:.3f} ms; rows={baseline['row_count']}; selected={selected}",flush=True)

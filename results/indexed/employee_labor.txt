@@ -2,4 +2,4 @@ employee_labor / indexed
 Parameters: [42, "2025-04-01", "2025-06-30"]
 4 | parent 0 | SEARCH TimeEntry USING INDEX idx_timeentry_person_date (person_id=? AND work_date>? AND work_date<?)
 Rows: 98
-Median: 0.080000 ms
+Median: 0.105900 ms
