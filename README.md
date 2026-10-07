@@ -4,6 +4,25 @@ This repository tests the four logical indexing proposals supplied for Section 5
 
 The complete blueprint and Round 1 model were not supplied. The eight-table subset implements the entities, query columns, relationships, and reasonable integrity constraints specified in the request. Exact conformity to unspecified blueprint attributes is not claimed.
 
+## Academic review
+
+This [public repository](https://github.com/clarkhbrowniii/gary-indexing-experiment) provides the source code, SQL, measured execution plans, timing samples, and validation evidence for academic review. The generated databases are excluded from source control; reviewers can regenerate the fully synthetic dataset locally.
+
+Start with [measured findings](results/summary/results.md), inspect [machine-readable evidence](results/summary/results.json), and consult [technical notes](docs/experiment-notes.md) and [clean-run reproduction checks](results/summary/reproducibility.json). The supplied query/index requirements are the basis of this experiment; the complete Gary blueprint is not included in this repository.
+
+To review an independent run without overwriting the committed measurements:
+
+~~~console
+git clone https://github.com/clarkhbrowniii/gary-indexing-experiment.git
+cd gary-indexing-experiment
+python scripts/generate_data.py --db data/review.sqlite
+python scripts/run_experiments.py --db data/review.sqlite --output data/review-results
+~~~
+
+Use a fresh database filename if repeating this review. Both the review database and its output remain under the ignored data directory. Compare logical results and execution plans with the committed evidence; elapsed times depend on the machine and SQLite version.
+
+When referencing this work in an academic submission, include the repository URL, the commit SHA reviewed (from git rev-parse HEAD), and the Python/SQLite versions in the results. GitHub Issues are enabled for questions and reproducibility reports. Public visibility permits inspection; no license has been selected for this repository, so no additional reuse permissions are stated here.
+
 ## Requirements and reproduction
 
 Python 3.10+ with its standard-library sqlite3 module; no pip dependencies. Git and GitHub CLI are needed only for source control and publishing.
@@ -52,23 +71,22 @@ SQLite normally creates an automatic index for a UNIQUE(system,key) constraint. 
 
 ## Actual results
 
-# Measured indexing results
-
 Python 3.13.2; SQLite 3.45.3; seed 6417; 7 measured runs and one warm-up per condition.
 
 | Query | Rows | Baseline ms | Indexed ms | Change % | Index selected |
 |---|---:|---:|---:|---:|---|
-| source_identity | 1 | 6.742 | 0.023 | -99.66% | True |
-| project_activity | 125 | 18.756 | 0.110 | -99.41% | True |
-| employee_labor | 98 | 9.027 | 0.080 | -99.11% | True |
-| project_labor | 3,000 | 129.651 | 230.008 | +77.41% | True |
+| source_identity | 1 | 6.946 | 0.022 | -99.69% | true |
+| project_activity | 125 | 19.274 | 0.213 | -98.90% | true |
+| employee_labor | 98 | 9.666 | 0.086 | -99.11% | true |
+| project_labor | 3,000 | 126.357 | 231.827 | +83.47% | true |
 
+The table above reflects the latest machine-readable results in results/summary/results.json. Earlier measured runs remain available in Git history.
 
 All four candidates were selected. The broad aggregation selected a non-covering date index even at 100% input selectivity and was slower. Its plan still uses temporary B-trees for grouping and ordering. This is an observed optimizer choice, not evidence that every analytical query should use a date index.
 
 Full plans, raw measurements, parameters, and verification are in [results.md](results/summary/results.md), [results.json](results/summary/results.json), and [results.csv](results/summary/results.csv). The database is 62.79 MiB. Generation took 9.87 seconds on this machine.
 
-Repository: https://github.com/clarkhbrowniii/gary-indexing-experiment (private).
+Repository: [clarkhbrowniii/gary-indexing-experiment](https://github.com/clarkhbrowniii/gary-indexing-experiment) — public for academic review.
 
 ## Limits
 
