@@ -1,0 +1,6 @@
+project_activity / baseline
+Parameters: [42, "2025-04-01 00:00:00", "2025-05-01 00:00:00"]
+3 | parent 0 | SCAN ProductionActivity
+21 | parent 0 | USE TEMP B-TREE FOR ORDER BY
+Rows: 125
+Median: 18.755900 ms

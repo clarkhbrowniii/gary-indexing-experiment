@@ -18,4 +18,43 @@ The process fixes SQLite cache capacity but cannot reset operating-system caches
 
 ## Observed findings
 
-Findings will be populated from the validated run.
+### source_identity
+
+SQLite selected the candidate index. Median elapsed time decreased.
+
+Baseline: SCAN SourceIdentity. Indexed: SEARCH SourceIdentity USING INDEX idx_source_identity_lookup (source_system_id=? AND source_key=?).
+
+Measured median: 6.742 → 0.023 ms (-99.66%). Returned rows: 1.
+
+### project_activity
+
+SQLite selected the candidate index. Median elapsed time decreased.
+
+Baseline: SCAN ProductionActivity; USE TEMP B-TREE FOR ORDER BY. Indexed: SEARCH ProductionActivity USING INDEX idx_production_project_time (project_id=? AND activity_timestamp>? AND activity_timestamp<?).
+
+Measured median: 18.756 → 0.110 ms (-99.41%). Returned rows: 125.
+
+### employee_labor
+
+SQLite selected the candidate index. Median elapsed time decreased.
+
+Baseline: SCAN TimeEntry; USE TEMP B-TREE FOR ORDER BY. Indexed: SEARCH TimeEntry USING INDEX idx_timeentry_person_date (person_id=? AND work_date>? AND work_date<?).
+
+Measured median: 9.027 → 0.080 ms (-99.11%). Returned rows: 98.
+
+### project_labor
+
+SQLite selected the candidate index. Median elapsed time increased; using an index does not guarantee faster execution. The reporting interval matches all time entries. This non-covering date index requires table-row access for project_id and hours and does not eliminate GROUP BY or ORDER BY temporary B-trees. These costs plausibly explain the observed slowdown; the plan does not expose the precise optimizer cost estimate.
+
+Baseline: SCAN TimeEntry; USE TEMP B-TREE FOR GROUP BY; USE TEMP B-TREE FOR ORDER BY. Indexed: SEARCH TimeEntry USING INDEX idx_timeentry_work_date (work_date>? AND work_date<?); USE TEMP B-TREE FOR GROUP BY; USE TEMP B-TREE FOR ORDER BY.
+
+Measured median: 129.651 → 230.008 ms (77.41%). Returned rows: 3000.
+
+The broad query returns 3,000 aggregate groups from 400,000 matching input entries (100% of TimeEntry). EXPLAIN QUERY PLAN shows a SEARCH using idx_timeentry_work_date, plus temporary B-trees for GROUP BY and ORDER BY. Selecting the available index despite its measured slowdown is the unexpected finding; timing cannot reveal the exact optimizer cost estimate. The three selective queries change from SCAN to SEARCH and the two ordered range queries eliminate their sort temporary B-tree.
+
+Validation: clean-state generation, expected counts, integrity_check=ok, zero foreign-key violations, five invalid-write rejections, nonempty queries, seven repeat-equality checks per condition, paired multiset equality, plan capture, and index isolation/cleanup all passed. Python 3.13.2; SQLite 3.45.3.
+
+
+A second complete clean workflow reproduced identical counts, query parameters, logical result hashes, and execution plans. Timings varied, with the same direction of effect in every comparison. Evidence is recorded in results/summary/reproducibility.json.
+
+All eight tables also passed full-content SHA-256 comparison between clean generations. Hash input is each row in primary-key order, serialized with Python json.dumps(row, separators=(",", ":")), followed by a newline, encoded as UTF-8. Physical SQLite file hashes differ after different numbers of schema/statistics cycles; logical data reproducibility is the relevant check.

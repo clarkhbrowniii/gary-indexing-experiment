@@ -1,0 +1,327 @@
+{
+  "platform": "Windows-11-10.0.26300-SP0",
+  "machine": "AMD64",
+  "python": "3.13.2",
+  "sqlite": "3.45.3",
+  "seed": 6417,
+  "counts": {
+    "SourceSystem": 15,
+    "Person": 3000,
+    "Project": 3000,
+    "Application": 35,
+    "Endpoint": 3000,
+    "SourceIdentity": 250000,
+    "ProductionActivity": 800000,
+    "TimeEntry": 400000
+  },
+  "generation": {
+    "seed": 6417,
+    "counts": {
+      "SourceSystem": 15,
+      "Person": 3000,
+      "Project": 3000,
+      "Application": 35,
+      "Endpoint": 3000,
+      "SourceIdentity": 250000,
+      "ProductionActivity": 800000,
+      "TimeEntry": 400000
+    },
+    "python": "3.13.2",
+    "sqlite": "3.45.3",
+    "generation_seconds": 9.87077160004992,
+    "database_bytes": 65839104,
+    "query_parameters": {
+      "source_identity": [
+        1,
+        "SYN-0125000"
+      ],
+      "project_activity": [
+        42,
+        "2025-04-01 00:00:00",
+        "2025-05-01 00:00:00"
+      ],
+      "employee_labor": [
+        42,
+        "2025-04-01",
+        "2025-06-30"
+      ],
+      "project_labor": [
+        "2025-01-01",
+        "2026-01-01"
+      ]
+    }
+  },
+  "repeats": 7,
+  "warmups_per_condition": 1,
+  "cache_kib": 65536,
+  "automatic_index": false,
+  "timing_scope": "Execute and fetch all rows; excludes equality validation and hashing",
+  "comparison": "Multiset equality, preserving duplicates; ORDER BY ties have no specified order",
+  "percentage_convention": "100 * (indexed / baseline - 1); negative means faster",
+  "validation": {
+    "integrity_check": "ok",
+    "foreign_key_violations": 0,
+    "constraint_rejections": 5,
+    "secondary_indexes_after_run": []
+  },
+  "results": [
+    {
+      "query_name": "source_identity",
+      "query_type": "Point",
+      "parameters": [
+        1,
+        "SYN-0125000"
+      ],
+      "candidate_index": "idx_source_identity_lookup",
+      "returned_row_count": 1,
+      "baseline": {
+        "plan": [
+          {
+            "id": 2,
+            "parent": 0,
+            "detail": "SCAN SourceIdentity"
+          }
+        ],
+        "median_ms": 6.7418,
+        "samples_ms": [
+          6.9282,
+          6.8061,
+          7.4219,
+          6.7418,
+          6.7111,
+          6.6704,
+          6.6301
+        ],
+        "row_count": 1,
+        "sha256": "172edee16b7150d4735a595725dd5d10e3bef081a924493680c744594168eca4"
+      },
+      "indexed": {
+        "plan": [
+          {
+            "id": 3,
+            "parent": 0,
+            "detail": "SEARCH SourceIdentity USING INDEX idx_source_identity_lookup (source_system_id=? AND source_key=?)"
+          }
+        ],
+        "median_ms": 0.023,
+        "samples_ms": [
+          0.0261,
+          0.024,
+          0.0233,
+          0.023,
+          0.0223,
+          0.0222,
+          0.0224
+        ],
+        "row_count": 1,
+        "sha256": "172edee16b7150d4735a595725dd5d10e3bef081a924493680c744594168eca4"
+      },
+      "timing_difference_percent": -99.6588448188911,
+      "index_selected": true,
+      "results_identical": true,
+      "interpretation": "SQLite selected the candidate index. Median elapsed time decreased."
+    },
+    {
+      "query_name": "project_activity",
+      "query_type": "Restricted range",
+      "parameters": [
+        42,
+        "2025-04-01 00:00:00",
+        "2025-05-01 00:00:00"
+      ],
+      "candidate_index": "idx_production_project_time",
+      "returned_row_count": 125,
+      "baseline": {
+        "plan": [
+          {
+            "id": 3,
+            "parent": 0,
+            "detail": "SCAN ProductionActivity"
+          },
+          {
+            "id": 21,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR ORDER BY"
+          }
+        ],
+        "median_ms": 18.7559,
+        "samples_ms": [
+          20.3241,
+          19.3314,
+          18.7559,
+          18.6714,
+          18.8924,
+          18.6343,
+          18.4217
+        ],
+        "row_count": 125,
+        "sha256": "7a2ea67ec5cb28935ea79c06c56b981a8c83703f2894925c089f1ffd74967d87"
+      },
+      "indexed": {
+        "plan": [
+          {
+            "id": 4,
+            "parent": 0,
+            "detail": "SEARCH ProductionActivity USING INDEX idx_production_project_time (project_id=? AND activity_timestamp>? AND activity_timestamp<?)"
+          }
+        ],
+        "median_ms": 0.11,
+        "samples_ms": [
+          0.2431,
+          0.206,
+          0.141,
+          0.11,
+          0.1043,
+          0.1016,
+          0.1022
+        ],
+        "row_count": 125,
+        "sha256": "7a2ea67ec5cb28935ea79c06c56b981a8c83703f2894925c089f1ffd74967d87"
+      },
+      "timing_difference_percent": -99.41351787970719,
+      "index_selected": true,
+      "results_identical": true,
+      "interpretation": "SQLite selected the candidate index. Median elapsed time decreased."
+    },
+    {
+      "query_name": "employee_labor",
+      "query_type": "Restricted range",
+      "parameters": [
+        42,
+        "2025-04-01",
+        "2025-06-30"
+      ],
+      "candidate_index": "idx_timeentry_person_date",
+      "returned_row_count": 98,
+      "baseline": {
+        "plan": [
+          {
+            "id": 3,
+            "parent": 0,
+            "detail": "SCAN TimeEntry"
+          },
+          {
+            "id": 19,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR ORDER BY"
+          }
+        ],
+        "median_ms": 9.0268,
+        "samples_ms": [
+          9.0268,
+          9.0748,
+          10.9714,
+          11.3283,
+          8.5743,
+          8.8129,
+          8.7016
+        ],
+        "row_count": 98,
+        "sha256": "526cb8c2f00905eb38418c85e18e571177dbc3ecc73afcdfac2face5fc44c297"
+      },
+      "indexed": {
+        "plan": [
+          {
+            "id": 4,
+            "parent": 0,
+            "detail": "SEARCH TimeEntry USING INDEX idx_timeentry_person_date (person_id=? AND work_date>? AND work_date<?)"
+          }
+        ],
+        "median_ms": 0.08,
+        "samples_ms": [
+          0.1133,
+          0.0897,
+          0.0883,
+          0.08,
+          0.0751,
+          0.0734,
+          0.0723
+        ],
+        "row_count": 98,
+        "sha256": "526cb8c2f00905eb38418c85e18e571177dbc3ecc73afcdfac2face5fc44c297"
+      },
+      "timing_difference_percent": -99.11375016617184,
+      "index_selected": true,
+      "results_identical": true,
+      "interpretation": "SQLite selected the candidate index. Median elapsed time decreased."
+    },
+    {
+      "query_name": "project_labor",
+      "query_type": "Scan / aggregation",
+      "parameters": [
+        "2025-01-01",
+        "2026-01-01"
+      ],
+      "candidate_index": "idx_timeentry_work_date",
+      "returned_row_count": 3000,
+      "baseline": {
+        "plan": [
+          {
+            "id": 7,
+            "parent": 0,
+            "detail": "SCAN TimeEntry"
+          },
+          {
+            "id": 13,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR GROUP BY"
+          },
+          {
+            "id": 55,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR ORDER BY"
+          }
+        ],
+        "median_ms": 129.6509,
+        "samples_ms": [
+          130.0438,
+          123.8006,
+          120.8455,
+          139.872,
+          135.4856,
+          129.6509,
+          121.9728
+        ],
+        "row_count": 3000,
+        "sha256": "d8b81312f953663edd7314ffe7ed3f1b61863cb2030336b1b437eb42e0f803ea"
+      },
+      "indexed": {
+        "plan": [
+          {
+            "id": 8,
+            "parent": 0,
+            "detail": "SEARCH TimeEntry USING INDEX idx_timeentry_work_date (work_date>? AND work_date<?)"
+          },
+          {
+            "id": 18,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR GROUP BY"
+          },
+          {
+            "id": 60,
+            "parent": 0,
+            "detail": "USE TEMP B-TREE FOR ORDER BY"
+          }
+        ],
+        "median_ms": 230.0083,
+        "samples_ms": [
+          239.2029,
+          229.8132,
+          266.2688,
+          218.9924,
+          224.5067,
+          230.0083,
+          231.0933
+        ],
+        "row_count": 3000,
+        "sha256": "d8b81312f953663edd7314ffe7ed3f1b61863cb2030336b1b437eb42e0f803ea"
+      },
+      "timing_difference_percent": 77.40586451771641,
+      "index_selected": true,
+      "results_identical": true,
+      "interpretation": "SQLite selected the candidate index. Median elapsed time increased; using an index does not guarantee faster execution. The reporting interval matches all time entries. This non-covering date index requires table-row access for project_id and hours and does not eliminate GROUP BY or ORDER BY temporary B-trees. These costs plausibly explain the observed slowdown; the plan does not expose the precise optimizer cost estimate.",
+      "matching_input_rows": 400000,
+      "input_selectivity_percent": 100.0
+    }
+  ]
+}

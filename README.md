@@ -52,10 +52,28 @@ SQLite normally creates an automatic index for a UNIQUE(system,key) constraint. 
 
 ## Actual results
 
-Measured results will be inserted after the clean workflow passes. Full artifacts are in results/summary/results.md, results.json, and results.csv.
+# Measured indexing results
+
+Python 3.13.2; SQLite 3.45.3; seed 6417; 7 measured runs and one warm-up per condition.
+
+| Query | Rows | Baseline ms | Indexed ms | Change % | Index selected |
+|---|---:|---:|---:|---:|---|
+| source_identity | 1 | 6.742 | 0.023 | -99.66% | True |
+| project_activity | 125 | 18.756 | 0.110 | -99.41% | True |
+| employee_labor | 98 | 9.027 | 0.080 | -99.11% | True |
+| project_labor | 3,000 | 129.651 | 230.008 | +77.41% | True |
+
+
+All four candidates were selected. The broad aggregation selected a non-covering date index even at 100% input selectivity and was slower. Its plan still uses temporary B-trees for grouping and ordering. This is an observed optimizer choice, not evidence that every analytical query should use a date index.
+
+Full plans, raw measurements, parameters, and verification are in [results.md](results/summary/results.md), [results.json](results/summary/results.json), and [results.csv](results/summary/results.csv). The database is 62.79 MiB. Generation took 9.87 seconds on this machine.
+
+Repository: https://github.com/clarkhbrowniii/gary-indexing-experiment (private).
 
 ## Limits
 
 Plans are primary evidence; timing is supporting evidence. Both conditions have an untimed warm-up, but OS caches are not flushed and baseline runs precede indexed runs. Index construction, statistics gathering, validation, and hashing are outside query timings. Python allocation and fetch costs are included. This tests one parameter set per query, no concurrent traffic, no write-throughput cost, and no alternative covering or composite designs. The broad labor interval intentionally includes all entries and may favor a scan. Results validate the indexing concepts within SQLite's optimizer and storage; they do not automatically generalize to Oracle, PostgreSQL, or any other engine.
 
 The generated database and its metadata sidecar are ignored by Git. Source, SQL, documentation, and small measured result artifacts are tracked.
+
+A second clean workflow reproduced identical query results/plans; see [reproducibility.json](results/summary/reproducibility.json).

@@ -1,6 +1,7 @@
 """Run four isolated baseline/index comparisons and verify actual results."""
 import argparse
 from collections import Counter
+from contextlib import closing
 import csv
 import hashlib
 import json
@@ -30,7 +31,7 @@ def connect(db):
     return conn
 
 def measure(db,query,params,repeats):
-    with connect(db) as conn:
+    with closing(connect(db)) as conn:
         plan=[dict(id=r[0],parent=r[1],detail=r[3]) for r in conn.execute('EXPLAIN QUERY PLAN '+query,params)]
         conn.execute(query,params).fetchall()  # identical untimed warm-up per condition
         samples=[]
@@ -108,6 +109,8 @@ def run(db,out,repeats):
                 difference=(indexed['median_ms']/baseline['median_ms']-1)*100
                 if selected:
                     interpretation='SQLite selected the candidate index. '+('Median elapsed time decreased.' if difference<0 else 'Median elapsed time increased; using an index does not guarantee faster execution.')
+                    if name=='project_labor':
+                        interpretation+=' The reporting interval matches all time entries. This non-covering date index requires table-row access for project_id and hours and does not eliminate GROUP BY or ORDER BY temporary B-trees. These costs plausibly explain the observed slowdown; the plan does not expose the precise optimizer cost estimate.'
                 else:
                     interpretation='SQLite did not select the candidate index. '
                     interpretation+=('The reporting interval matches all time entries; a scan avoids indexed lookups for the entire table. GROUP BY and ORDER BY still require aggregation/sorting.' if name=='project_labor' else 'The observed plan is primary evidence; optimizer estimates can favor a scan.')
@@ -130,7 +133,7 @@ def run(db,out,repeats):
                 assert secondary(conn)==[]
         conn.execute('ANALYZE')
         conn.commit()
-        report=dict(python=platform.python_version(),sqlite=sqlite3.sqlite_version,seed=metadata['seed'],counts=counts,
+        report=dict(platform=platform.platform(),machine=platform.machine(),python=platform.python_version(),sqlite=sqlite3.sqlite_version,seed=metadata['seed'],counts=counts,
                     generation=metadata,repeats=repeats,warmups_per_condition=1,cache_kib=65536,
                     automatic_index=False,timing_scope='Execute and fetch all rows; excludes equality validation and hashing',
                     comparison='Multiset equality, preserving duplicates; ORDER BY ties have no specified order',

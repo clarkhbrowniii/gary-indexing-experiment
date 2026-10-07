@@ -1,0 +1,7 @@
+project_labor / indexed
+Parameters: ["2025-01-01", "2026-01-01"]
+8 | parent 0 | SEARCH TimeEntry USING INDEX idx_timeentry_work_date (work_date>? AND work_date<?)
+18 | parent 0 | USE TEMP B-TREE FOR GROUP BY
+60 | parent 0 | USE TEMP B-TREE FOR ORDER BY
+Rows: 3000
+Median: 230.008300 ms

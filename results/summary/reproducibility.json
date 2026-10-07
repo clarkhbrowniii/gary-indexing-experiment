@@ -1,0 +1,79 @@
+{
+  "method": "Second complete generation and measurement from a new database path with the same seed",
+  "database_sha256": {
+    "gary.sqlite": "c633b1384aca9c6196150a50213672aa30c0d579b7e6a2342347770c603805c7",
+    "reproduction.sqlite": "e1155e5ab906cb8512576a8e80e0d9abe883717c95f7754b6cf371c0035ddb95"
+  },
+  "databases_byte_identical": false,
+  "counts_identical": true,
+  "checks": [
+    {
+      "query": "source_identity",
+      "parameters_identical": true,
+      "result_sha256_identical": true,
+      "baseline_plan_identical": true,
+      "indexed_plan_identical": true
+    },
+    {
+      "query": "project_activity",
+      "parameters_identical": true,
+      "result_sha256_identical": true,
+      "baseline_plan_identical": true,
+      "indexed_plan_identical": true
+    },
+    {
+      "query": "employee_labor",
+      "parameters_identical": true,
+      "result_sha256_identical": true,
+      "baseline_plan_identical": true,
+      "indexed_plan_identical": true
+    },
+    {
+      "query": "project_labor",
+      "parameters_identical": true,
+      "result_sha256_identical": true,
+      "baseline_plan_identical": true,
+      "indexed_plan_identical": true
+    }
+  ],
+  "second_run_validation": {
+    "integrity_check": "ok",
+    "foreign_key_violations": 0,
+    "constraint_rejections": 5,
+    "secondary_indexes_after_run": []
+  },
+  "second_run_medians_ms": [
+    {
+      "query": "source_identity",
+      "baseline": 9.4119,
+      "indexed": 0.0221
+    },
+    {
+      "query": "project_activity",
+      "baseline": 19.1888,
+      "indexed": 0.1343
+    },
+    {
+      "query": "employee_labor",
+      "baseline": 8.844,
+      "indexed": 0.0776
+    },
+    {
+      "query": "project_labor",
+      "baseline": 140.9454,
+      "indexed": 265.2849
+    }
+  ],
+  "all_table_content_identical": true,
+  "table_content_sha256": {
+    "SourceSystem": "045a08b47153cefbf9db8df01238d50d5dbb48cf76522f851869b5663a70f7a8",
+    "Person": "76c64725c91b0b4224e52d78216600d87940a04394dd417bd3e3ad1d2598ecee",
+    "Project": "b6b3f2bf5e37bbc82a8136cf38bbe1ecd8143531a3764e156a867e66f56b5ff7",
+    "Application": "79192dca4ac83cce1387ffdd541a2f89d8c7ed7de6b36c8d8d9e90c0e503d977",
+    "Endpoint": "e982aa587071c35deaea6803c615367b1c0bf2b50717fd4a1a8a30584722d4ac",
+    "SourceIdentity": "0c7b123da6a93401120d1f355a6f7e3217e3170ae2364eeba69cabd50592e564",
+    "ProductionActivity": "278d266ca7abad9218cdc36c4f1a1242d233e353cca996ef39535390ace7f64d",
+    "TimeEntry": "4c2efd3a7f8a9b9df13b18edd0fe2a8520055e5ad8cabcb60139d79e65653afb"
+  },
+  "byte_hash_note": "Physical SQLite files differ after different numbers of index/statistics cycles. Logical contents of all eight tables are identical."
+}
