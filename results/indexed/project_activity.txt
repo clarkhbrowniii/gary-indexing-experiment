@@ -2,4 +2,4 @@ project_activity / indexed
 Parameters: [42, "2025-04-01 00:00:00", "2025-05-01 00:00:00"]
 4 | parent 0 | SEARCH ProductionActivity USING INDEX idx_production_project_time (project_id=? AND activity_timestamp>? AND activity_timestamp<?)
 Rows: 125
-Median: 0.128800 ms
+Median: 0.212900 ms

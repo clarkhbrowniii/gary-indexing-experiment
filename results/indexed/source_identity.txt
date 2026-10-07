@@ -2,4 +2,4 @@ source_identity / indexed
 Parameters: [1, "SYN-0125000"]
 3 | parent 0 | SEARCH SourceIdentity USING INDEX idx_source_identity_lookup (source_system_id=? AND source_key=?)
 Rows: 1
-Median: 0.022300 ms
+Median: 0.021700 ms

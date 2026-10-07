@@ -3,4 +3,4 @@ Parameters: [42, "2025-04-01", "2025-06-30"]
 3 | parent 0 | SCAN TimeEntry
 19 | parent 0 | USE TEMP B-TREE FOR ORDER BY
 Rows: 98
-Median: 9.600200 ms
+Median: 9.666000 ms

@@ -4,10 +4,10 @@ Python 3.13.2; SQLite 3.45.3; seed 6417; 7 measured runs and one warm-up per con
 
 | Query | Rows | Baseline ms | Indexed ms | Change % | Index selected |
 |---|---:|---:|---:|---:|---|
-| source_identity | 1 | 6.895 | 0.022 | -99.68% | True |
-| project_activity | 125 | 19.193 | 0.129 | -99.33% | True |
-| employee_labor | 98 | 9.600 | 0.082 | -99.14% | True |
-| project_labor | 3,000 | 118.319 | 216.855 | +83.28% | True |
+| source_identity | 1 | 6.946 | 0.022 | -99.69% | True |
+| project_activity | 125 | 19.274 | 0.213 | -98.90% | True |
+| employee_labor | 98 | 9.666 | 0.086 | -99.11% | True |
+| project_labor | 3,000 | 126.357 | 231.827 | +83.47% | True |
 
 ## source_identity
 

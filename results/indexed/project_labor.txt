@@ -4,4 +4,4 @@ Parameters: ["2025-01-01", "2026-01-01"]
 18 | parent 0 | USE TEMP B-TREE FOR GROUP BY
 60 | parent 0 | USE TEMP B-TREE FOR ORDER BY
 Rows: 3000
-Median: 216.854900 ms
+Median: 231.827200 ms
